@@ -14,20 +14,22 @@ import win32api
 import win32gui
 
 #刷御魂的任务编码
-taskYuhun =2
+taskTansuo =3
 
-confthreshold  = 0.7
-confthresholdH = 0.9
+confthreshold   = 0.7
+confthreshold_H = 0.91
 
 #关于状态的定义
-yuhun_combat    =2
-yuhun_explore   =0
-yuhun_choose    =11
-yuhun_begin     =21
-yuhun_ready     =28
-yuhun_end1      =31
-yuhun_end2      =32
-statuslast      = -11
+tansuo_combat    =2
+tansuo_explore   =0
+tansuo_begin     =11
+tansuo_choose    =20
+tansuo_ready     =28
+tansuo_find      =30
+tansuo_end       =33
+tansuo_over1     =41
+tansuo_over2     =42
+statuslast       = -11
 
 
 # 自定义一个单击函数
@@ -43,110 +45,140 @@ def click_button_lift(posbase,offset,w,h):
     # 点击鼠标，仅在夜神模拟器实验成功
     pyautogui.click()
 
-def click_action_yuhun(taskNow,yuhuncnt,status,posbase,offset,w,h):
+def click_action_tansuo(taskNow,tansuocnt,status,posbase,offset,w,h):
     #引用的全局变量
     global statuslast
     #在探索界面点击进入,或刷新状态
-    if status==yuhun_explore:
-        if yuhuncnt>0:
-            taskNow =taskYuhun
-            click_button_lift(posbase,offset,w,h)
+    if status==tansuo_explore:
+        if tansuocnt>0:
+            taskNow =taskTansuo
+            click_button_lift(posbase,[722,422],110,40)   #默认选择25章节
         else:
             taskNow = -1
-    #在结算界面点击结束
-    elif status==yuhun_end1 or status==yuhun_end2 or status==yuhun_ready:
+            click_button_lift(posbase,[36,72],33,27)      #默认返回庭院
+    #在结算界面点击结束,或找到妖怪开战,或奖励小纸人
+    elif status==tansuo_end or status==tansuo_ready or status==tansuo_choose or status==tansuo_over1:
         click_button_lift(posbase,offset,w,h)
+    #小纸人奖励结算,需独立设置坐标
+    elif status==tansuo_over2:
+        click_button_lift(posbase,[520,160],99,99)
+    #找不到妖怪移动主角
+    elif status==tansuo_find:
+        click_button_lift(posbase,[530,530],5,5)
     #在开始界面判断任务次数,顺带修正状态
-    elif status==yuhun_begin:
-        if yuhuncnt>0:
+    elif status==tansuo_begin:
+        if tansuocnt>0 and statuslast!=tansuo_begin:
+            statuslast =status
+            taskNow    =taskTansuo
+            tansuocnt  =tansuocnt-1
             click_button_lift(posbase,offset,w,h)
         else:
             taskNow = -1
             click_button_lift(posbase,[657,186],27,27)
-    #在选择界面判断任务次数,并修正任务状态
-    elif status==yuhun_choose:
-        if yuhuncnt>0:
-            taskNow =taskYuhun
-            click_button_lift(posbase,[250,350],180,30)  #选择与开始界面不冲突的地方
-        elif 0:
-            taskNow = -1
-            click_button_lift(posbase,[675,540],180,50)  #[675,540],180,50
-    #从另外一个状态进入的战斗,任务次数削减1
-    elif status==yuhun_combat and statuslast!=status:
-        yuhuncnt =yuhuncnt-1
 
     #更新状态记录       
     statuslast =status
+    #防止误操作这里休停2秒
+    time.sleep(2)
+    return taskNow,tansuocnt
 
-    return taskNow,yuhuncnt
-
-# 御魂相关图片识别并确定状态
-def find_status_yuhun(taskNow,yuhuncnt,imsrc,posbase):
+# 探索相关图片识别并确定状态
+def find_status_tansuo(taskNow,tansuocnt,imsrc,posbase):
     #使用的临时状态量
     status = -1
     #检测是否处于战斗状态
     imobj =imobj_combat
     res =ac.find_template(imsrc,imobj)
     if res !=None and res['confidence']>confthreshold :
-        status =yuhun_combat
+        status =tansuo_combat
     #检测是否在探索选择界面
     if status<0 :
-        imobj =imobj_yuhun0
+        imobj =imobj_tansuo0
         res =ac.find_template(imsrc,imobj)
         if res !=None and res['confidence']>confthreshold :
-            status =yuhun_explore
+            status =tansuo_explore
     #检测是否有开始按钮
     if status<0 :
-        imobj =imobj_yuhun21
+        imobj =imobj_tansuo11
         res =ac.find_template(imsrc,imobj)
         if res !=None and res['confidence']>confthreshold :
-            status =yuhun_begin
+            status =tansuo_begin
     #检测是否在选择界面       
     if status<0 :
-        imobj =imobj_yuhun11
+        imobj =imobj_tansuo20
         res =ac.find_template(imsrc,imobj)
         if res !=None and res['confidence']>confthreshold :
-            status =yuhun_choose
+            status =tansuo_choose
+    if status<0 :
+        imobj =imobj_tansuo21
+        res =ac.find_template(imsrc,imobj)
+        if res !=None and res['confidence']>confthreshold :
+            status =tansuo_choose
+    if status<0 :
+        imobj =imobj_tansuo22
+        res =ac.find_template(imsrc,imobj)
+        if res !=None and res['confidence']>confthreshold :
+            status =tansuo_choose
     #检测是否有准备按钮
     if status<0 :
-        imobj =imobj_yuhun2R
+        imobj =imobj_tansuo2R
         res =ac.find_template(imsrc,imobj)
         if res !=None and res['confidence']>confthreshold :
-            status =yuhun_ready
+            status =tansuo_ready
     #检查结算界面1
     if status<0 :
-        imobj =imobj_yuhun31
+        imobj =imobj_tansuo31
         res =ac.find_template(imsrc,imobj)
         if res !=None and res['confidence']>confthreshold :
-            status =yuhun_end2
-    #检查结算界面2        
+            status =tansuo_end
     if status<0 :
-        imobj =imobj_yuhun32
+        imobj =imobj_tansuo32
         res =ac.find_template(imsrc,imobj)
         if res !=None and res['confidence']>confthreshold :
-            status =yuhun_end2
+            status =tansuo_end
+    #检查是否在关卡结算界面
+    if status<0 :
+        imobj =imobj_tansuo41
+        res =ac.find_template(imsrc,imobj)
+        if res !=None and res['confidence']>confthreshold_H :
+            status =tansuo_over1
+    if status<0 :
+        imobj =imobj_tansuo42
+        res =ac.find_template(imsrc,imobj)
+        if res !=None and res['confidence']>confthreshold :
+            status =tansuo_over2
+    #如果无任何结果判断是否探索中
+    if status<0 :
+        imobj =imobj_tansuo30
+        res =ac.find_template(imsrc,imobj)
+        if res !=None and res['confidence']>confthreshold :
+            status =tansuo_find
+
     # 从结果中读取坐标
     if status >=0 :
         offset =res['result']
         # 在目标范围内做一次随机取点
-        w,h,r =imobj.shape
-        taskNow,yuhuncnt =click_action_yuhun(taskNow,yuhuncnt,status,posbase,offset,w,h)
-    #防止误操作这里休停2秒
-    time.sleep(2)
+        rect =imobj.shape
+        taskNow,tansuocnt =click_action_tansuo(taskNow,tansuocnt,status,posbase,offset,rect[0],rect[1])
     
-    return taskNow,yuhuncnt
+    return taskNow,tansuocnt
 
 
 
 # 战斗状态目标匹配
 imobj_combat  =ac.imread("C:\\Users\\ShiAokai\\Pictures\\yysm\\obj_combat.png")
-# 麒麟副本 源图待匹配目标读取
-imobj_yuhun0  =ac.imread("C:\\Users\\ShiAokai\\Pictures\\yysm\\obj_explore_yuhun.png")
-imobj_yuhun11 =ac.imread("C:\\Users\\ShiAokai\\Pictures\\yysm\\yys_yuhun11_choose.png")
-imobj_yuhun21 =ac.imread("C:\\Users\\ShiAokai\\Pictures\\yysm\\yys_yuhun21_begin.png")
-imobj_yuhun2R =ac.imread("C:\\Users\\ShiAokai\\Pictures\\yysm\\yys_yuhun28_ready.png")
-imobj_yuhun31 =ac.imread("C:\\Users\\ShiAokai\\Pictures\\yysm\\yys_yuhun31_end.png")
-imobj_yuhun32 =ac.imread("C:\\Users\\ShiAokai\\Pictures\\yysm\\yys_yuhun32_end.png")
+# 探索副本 源图待匹配目标读取
+imobj_tansuo0  =ac.imread("C:\\Users\\ShiAokai\\Pictures\\yysm\\obj_explore_tansuo.png")
+imobj_tansuo11 =ac.imread("C:\\Users\\ShiAokai\\Pictures\\yysm\\yys_tansuo11_begin.png")
+imobj_tansuo20 =ac.imread("C:\\Users\\ShiAokai\\Pictures\\yysm\\yys_tansuo20_fight.png")
+imobj_tansuo21 =ac.imread("C:\\Users\\ShiAokai\\Pictures\\yysm\\yys_tansuo21_fight.png")
+imobj_tansuo22 =ac.imread("C:\\Users\\ShiAokai\\Pictures\\yysm\\yys_tansuo22_fight.png")
+imobj_tansuo2R =ac.imread("C:\\Users\\ShiAokai\\Pictures\\yysm\\yys_tansuo28_ready.png")
+imobj_tansuo30 =ac.imread("C:\\Users\\ShiAokai\\Pictures\\yysm\\yys_tansuo30_find.png")
+imobj_tansuo31 =ac.imread("C:\\Users\\ShiAokai\\Pictures\\yysm\\yys_tansuo31_end.png")
+imobj_tansuo32 =ac.imread("C:\\Users\\ShiAokai\\Pictures\\yysm\\yys_tansuo32_end.png")
+imobj_tansuo41 =ac.imread("C:\\Users\\ShiAokai\\Pictures\\yysm\\yys_tansuo41_over.png")
+imobj_tansuo42 =ac.imread("C:\\Users\\ShiAokai\\Pictures\\yysm\\yys_tansuo42_over.png")
 
 
 

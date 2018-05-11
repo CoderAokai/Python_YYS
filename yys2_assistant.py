@@ -13,8 +13,9 @@ from PIL import ImageGrab
 import cv2
 import win32api
 import win32gui
-from yys2_fun_qilin import find_status_qilin,taskQilin
-from yys2_fun_yuhun import find_status_yuhun,taskYuhun
+from yys2_fun_qilin  import find_status_qilin,taskQilin
+from yys2_fun_yuhun  import find_status_yuhun,taskYuhun
+from yys2_fun_tansuo import find_status_tansuo,taskTansuo
 
 # 获取窗口句柄及位置
 clsname ="Qt5QWindowIcon"
@@ -29,8 +30,8 @@ else:
 taskNow =-1
 
 qilincnt  =1
-yuhuncnt  =3
-tansuocnt =3
+yuhuncnt  =0
+tansuocnt =1
 
 
 while(hwnd != None):
@@ -47,6 +48,8 @@ while(hwnd != None):
         taskNow,qilincnt =find_status_qilin(taskNow,qilincnt,imsrc,posbase)
     elif  taskNow==taskYuhun or yuhuncnt>0:
         taskNow,yuhuncnt =find_status_yuhun(taskNow,yuhuncnt,imsrc,posbase)
+    elif  taskNow==taskTansuo or tansuocnt>0:
+        taskNow,tansuocnt =find_status_tansuo(taskNow,tansuocnt,imsrc,posbase)
     # 记录一下时间 以供参考
     end_time =time.time()
     if taskNow>=0 :  

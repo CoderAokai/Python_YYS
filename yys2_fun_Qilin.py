@@ -69,10 +69,11 @@ def click_action_qilin(taskNow,qilincnt,status,posbase,offset,w,h):
     #从另外一个状态进入的战斗,任务次数削减1
     elif status==qilin_combat and statuslast!=status:
         qilincnt =qilincnt-1
-
+        
     #更新状态记录       
     statuslast =status
-
+    #防止误操作这里休停2秒
+    time.sleep(2)
     return taskNow,qilincnt
 
 # 麒麟相关图片识别并确定状态
@@ -124,10 +125,8 @@ def find_status_qilin(taskNow,qilincnt,imsrc,posbase):
     if status >=0 :
         offset =res['result']
         # 在目标范围内做一次随机取点
-        w,h,r =imobj.shape
-        taskNow,qilincnt =click_action_qilin(taskNow,qilincnt,status,posbase,offset,w,h)
-    #防止误操作这里休停2秒
-    time.sleep(2)
+        rect =imobj.shape
+        taskNow,qilincnt =click_action_qilin(taskNow,qilincnt,status,posbase,offset,rect[0],rect[1])
     
     return taskNow,qilincnt
 
