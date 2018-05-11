@@ -41,23 +41,26 @@ def click_button_lift(posbase,offset,w,h):
 def click_action_qilin(taskNow,qilincnt,status,posbase,offset,w,h):
     #引用的全局变量
     global statuslast
-    #在探索界面点击进入,或重置状态
-    if status==qilin_explore:
+    
+    #在结算界面点击结束
+    if status==qilin_end1 or status==qilin_end2 or status==qilin_ready:
+        click_button_lift(posbase,offset,w,h)
+    #在探索界面点击进入,或重置状态             需时间等待
+    elif status==qilin_explore:
         if qilincnt>0:
             taskNow =taskQilin
             click_button_lift(posbase,offset,w,h)
         else:
             taskNow = -1
-    #在结算界面点击结束
-    elif status==qilin_end1 or status==qilin_end2 or status==qilin_ready:
-        click_button_lift(posbase,offset,w,h)
-    #在开始界面判断任务次数,顺带修正状态
+        time.sleep(2)
+    #在开始界面判断任务次数,顺带修正状态       需时间等待
     elif status==qilin_begin:
         if qilincnt>0:
             click_button_lift(posbase,offset,w,h)
         else:
             taskNow = -1
-            click_button_lift(posbase,[657,186],27,27)
+            click_button_lift(posbase,[657,186],27,27)   #任务结束X掉界面
+        time.sleep(2)
     #在选择界面判断任务次数,并修正任务状态
     elif status==qilin_choose:
         if qilincnt>0:
@@ -73,7 +76,7 @@ def click_action_qilin(taskNow,qilincnt,status,posbase,offset,w,h):
     #更新状态记录       
     statuslast =status
     #防止误操作这里休停2秒
-    time.sleep(2)
+    #time.sleep(2)
     return taskNow,qilincnt
 
 # 麒麟相关图片识别并确定状态

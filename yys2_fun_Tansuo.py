@@ -55,7 +55,7 @@ def click_action_tansuo(taskNow,tansuocnt,status,posbase,offset,w,h):
             click_button_lift(posbase,[722,422],110,40)   #默认选择25章节
         else:
             taskNow = -1
-            click_button_lift(posbase,[36,72],33,27)      #默认返回庭院
+            #click_button_lift(posbase,[36,72],33,27)      #默认返回庭院
     #在结算界面点击结束,或找到妖怪开战,或奖励小纸人
     elif status==tansuo_end or status==tansuo_ready or status==tansuo_choose or status==tansuo_over1:
         click_button_lift(posbase,offset,w,h)
@@ -65,16 +65,17 @@ def click_action_tansuo(taskNow,tansuocnt,status,posbase,offset,w,h):
     #找不到妖怪移动主角
     elif status==tansuo_find:
         click_button_lift(posbase,[530,530],5,5)
+        time.sleep(1)
     #在开始界面判断任务次数,顺带修正状态
     elif status==tansuo_begin:
         if tansuocnt>0 and statuslast!=tansuo_begin:
-            statuslast =status
             taskNow    =taskTansuo
             tansuocnt  =tansuocnt-1
             click_button_lift(posbase,offset,w,h)
         else:
             taskNow = -1
-            click_button_lift(posbase,[657,186],27,27)
+            click_button_lift(posbase,[657,186],27,27)    #任务结束X掉界面
+        time.sleep(2)
 
     #更新状态记录       
     statuslast =status

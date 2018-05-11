@@ -29,9 +29,9 @@ else:
 # 假定一个初始状态，但随后被更新了
 taskNow =-1
 
-qilincnt  =1
-yuhuncnt  =0
-tansuocnt =1
+qilincnt  =0
+yuhuncnt  =1
+tansuocnt =0
 
 
 while(hwnd != None):
@@ -55,3 +55,11 @@ while(hwnd != None):
     if taskNow>=0 :  
         print("Use time:",end_time-begin_time,taskNow)
 
+    if qilincnt<=0 and yuhuncnt<=0 and tansuocnt<=0 and taskNow<0:
+        # 移动鼠标至指定位置
+        pyautogui.moveTo(posbase[0]+36,posbase[1]+72)
+        # 点击鼠标，仅在夜神模拟器实验成功
+        pyautogui.click()
+        break
+
+print("Well done !!!")
