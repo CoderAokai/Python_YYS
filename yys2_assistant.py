@@ -3,31 +3,52 @@
 2.0及以上版本试图实现多文件函数
 这是一个来自远程的更改
 '''
+import time
 
+import aircv as ac
+import pyautogui
+import win32con
+from PIL import ImageGrab
 
+import cv2
+import win32api
+import win32gui
+from yys2_fun_qilin import find_status_qilin,taskQilin
+from yys2_fun_yuhun import find_status_yuhun,taskYuhun
 
-
-from yys2_function import *
-
-
-
-
+# 获取窗口句柄及位置
+clsname ="Qt5QWindowIcon"
+tlename ="夜神模拟器"
+hwnd =win32gui.FindWindow(clsname,tlename)
+if hwnd!=None:
+    posbase =win32gui.GetWindowRect(hwnd)
+else:
+    print("Warning: fail to find the window!!!")
+        
 # 假定一个初始状态，但随后被更新了
-statusNow =-1
+taskNow =-1
 
-while(hwnd != None) :
+qilincnt  =1
+yuhuncnt  =3
+tansuocnt =3
+
+
+while(hwnd != None):
     # 记录时间
     begin_time =time.time()
     # 截取指定位置屏幕并保存
     img =ImageGrab.grab(posbase)
-    img.save("\\yysm\\yys_src.png")
+    img.save("C:\\Users\\ShiAokai\\Pictures\\yysm\\a_pic_src.png")
     # 读取源图以及待匹配目标
-    imsrc =ac.imread("\\yysm\\yys_src.png")
+    time.sleep(0.1)
+    imsrc =ac.imread("C:\\Users\\ShiAokai\\Pictures\\yysm\\a_pic_src.png")
     # 获取目标相对位置
-    statusNow,posaim =find_status_yuhun(statusNow,imsrc)
+    if taskNow==taskQilin or qilincnt>0:
+        taskNow,qilincnt =find_status_qilin(taskNow,qilincnt,imsrc,posbase)
+    elif  taskNow==taskYuhun or yuhuncnt>0:
+        taskNow,yuhuncnt =find_status_yuhun(taskNow,yuhuncnt,imsrc,posbase)
     # 记录一下时间 以供参考
     end_time =time.time()
-    if statusNow>=0 :  
-        print("Use time:",end_time-begin_time,statusNow)
-    # 确定执行何种动作
-    click_action(statusNow,posaim)
+    if taskNow>=0 :  
+        print("Use time:",end_time-begin_time,taskNow)
+
