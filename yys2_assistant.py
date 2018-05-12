@@ -29,9 +29,9 @@ else:
 # 假定一个初始状态，但随后被更新了
 taskNow =-1
 
-qilincnt  =0
-yuhuncnt  =1
-tansuocnt =0
+qilincnt  =1
+yuhuncnt  =3
+tansuocnt =3
 
 
 while(hwnd != None):
