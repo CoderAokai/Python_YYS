@@ -5,7 +5,6 @@ import random
 import time
 
 import aircv as ac
-import numpy as np
 import pyautogui
 import win32con
 from PIL import ImageGrab
@@ -13,6 +12,7 @@ from PIL import ImageGrab
 import cv2
 import win32api
 import win32gui
+import numpy as np
 
 confthreshold  = 0.8
 confthresholdH = 0.9
@@ -119,9 +119,14 @@ statusNow =-1
 begin_time =time.time()
 last_time  =time.time()
 while(hwnd != None) :
-    # 截取指定位置屏幕并保存
+    #截图
     img =ImageGrab.grab(posbase)
-    imsrc =np.array(img)
+    #从图片格式像素[R,G,B]转化数组
+    imary =np.array(img)
+    #讲像素通道分离
+    [r,g,b] =cv2.split(imary)
+    #以oprncv像素格式[B,G,R]重新组成一幅图片并转化为数组
+    imsrc =np.array(cv2.merge([b,g,r]))
     '''
     img.save("C:\\Users\\ShiAokai\\Pictures\\yysm\\yys_src.png")
     # 读取源图以及待匹配目标

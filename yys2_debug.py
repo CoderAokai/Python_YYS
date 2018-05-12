@@ -19,17 +19,25 @@ if hwnd!=None:
 else:
     print("Warning: fail to find the window!!!")
 
+#截图
 img =ImageGrab.grab(posbase)
-imsrc =np.array(img)
+#从图片格式像素[R,G,B]转化数组
+imary =np.array(img)
+#讲像素通道分离
+[r,g,b] =cv2.split(imary)
+#以oprncv像素格式[B,G,R]重新组成一幅图片并转化为数组
+imsrc =np.array(cv2.merge([b,g,r]))
+
 #img.save("C:\\Users\\ShiAokai\\Pictures\\yysm\\a_pic_src.png")
 #读取源图以及待匹配目标
-imsrc =ac.imread("C:\\Users\\ShiAokai\\Pictures\\yysm\\a_pic_src.png")
+#imsrc =ac.imread("C:\\Users\\ShiAokai\\Pictures\\yysm\\a_pic_src.png")
 #imsrc =ac.imread("C:\\Users\\ShiAokai\\Pictures\\apic_tansuo_over.png")
 
+imobj_yuhun0  =ac.imread("C:\\Users\\ShiAokai\\Pictures\\yysm\\obj_explore_yuhun.png")
 imobj_tansuo41 =ac.imread("C:\\Users\\ShiAokai\\Pictures\\yysm\\yys_tansuo41_over.png")
 
 
-imobj =imobj_tansuo41
+imobj =imobj_yuhun0
 
 [w,h,r] =imobj.shape
 
