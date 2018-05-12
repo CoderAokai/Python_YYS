@@ -5,25 +5,25 @@
 '''
 import time
 
-import aircv as ac
 import numpy as np
 import pyautogui
 import win32con
 from PIL import ImageGrab
 
+#import aircv as ac
 import cv2
 import win32api
 import win32gui
-from yys2_fun_qilin  import find_status_qilin,taskQilin
-from yys2_fun_yuhun  import find_status_yuhun,taskYuhun
-from yys2_fun_tansuo import find_status_tansuo,taskTansuo
-
+from yys2_fun_qilin import find_status_qilin, taskQilin
+from yys2_fun_tansuo import find_status_tansuo, taskTansuo
+from yys2_fun_yuhun import find_status_yuhun, taskYuhun
 
 # 设置任务次数
 qilincnt  =1
 yuhuncnt  =3
 tansuocnt =3
 # 从输入读取，可省略
+instr =''
 instr =input("Please input task times : ")
 if instr:
     qilincnt,yuhuncnt,tansuocnt =(int(x) for x in instr.split(' '))
