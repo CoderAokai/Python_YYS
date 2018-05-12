@@ -5,6 +5,7 @@ import random
 import time
 
 import aircv as ac
+import numpy as np
 import pyautogui
 import win32con
 from PIL import ImageGrab
@@ -120,9 +121,12 @@ last_time  =time.time()
 while(hwnd != None) :
     # 截取指定位置屏幕并保存
     img =ImageGrab.grab(posbase)
+    imsrc =np.array(img)
+    '''
     img.save("C:\\Users\\ShiAokai\\Pictures\\yysm\\yys_src.png")
     # 读取源图以及待匹配目标
     imsrc =ac.imread("C:\\Users\\ShiAokai\\Pictures\\yysm\\yys_src.png")
+    '''
     # 获取目标相对位置
     statusNow,posaim =find_status_yuhun(statusNow,imsrc)
     # 记录一下时间 以供参考
